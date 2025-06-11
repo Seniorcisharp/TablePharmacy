@@ -1,4 +1,4 @@
-﻿USE master;
+USE master;
 GO
 DROP DATABASE IF EXISTS Pharmacy;
 GO
@@ -9,80 +9,67 @@ GO
 
 CREATE TABLE Diseases (
     DiseaseId INT PRIMARY KEY,
-    Название_Болезней NVARCHAR(70) NOT NULL,
-    Симптомы NVARCHAR(100) NOT NULL,
-    Противопоказания NVARCHAR(300)
+    DiseaseName NVARCHAR(70) NOT NULL,
+    Symptoms NVARCHAR(100) NOT NULL,
+    Contraindications NVARCHAR(300)
 );
 
-
-CREATE TABLE Medikament (
-    MedikamentId INT PRIMARY KEY,
-    Название_Медикаментов NVARCHAR(70) NOT NULL,
-    Форма NVARCHAR(100),
-    Дозировка NVARCHAR(50),
-    Срок DATE,
-    Цена DECIMAL(10, 2),
-    Надо_Ли_Рецепт BIT
+CREATE TABLE Medications (
+    MedicationId INT PRIMARY KEY,
+    MedicationName NVARCHAR(70) NOT NULL,
+    Form NVARCHAR(100),
+    Dosage NVARCHAR(50),
+    ExpirationDate DATE,
+    Price DECIMAL(10, 2),
+    RequiresPrescription BIT
 );
 
-
-CREATE TABLE Рекомендуемые_медикаменты (
+CREATE TABLE Recommended_Medications (
     DiseaseId INT NOT NULL,
-    MedikamentId INT NOT NULL,
-    PRIMARY KEY (DiseaseId, MedikamentId),
+    MedicationId INT NOT NULL,
+    PRIMARY KEY (DiseaseId, MedicationId),
     FOREIGN KEY (DiseaseId) REFERENCES Diseases(DiseaseId),
-    FOREIGN KEY (MedikamentId) REFERENCES Medikament(MedikamentId)
+    FOREIGN KEY (MedicationId) REFERENCES Medications(MedicationId)
 );
 
-
-CREATE TABLE Рецепты (
-    RecipeId INT PRIMARY KEY,
-    Имя_Доктора NVARCHAR(20) NOT NULL,
-    Фамилия_Доктора NVARCHAR(20) NOT NULL,
-    Имя_пациента NVARCHAR(20) NOT NULL,
-    Фамилия_Пациента NVARCHAR(20) NOT NULL,
-    Дата_Релиза DATE
+CREATE TABLE Prescriptions (
+    PrescriptionId INT PRIMARY KEY,
+    DoctorFirstName NVARCHAR(20) NOT NULL,
+    DoctorLastName NVARCHAR(20) NOT NULL,
+    PatientFirstName NVARCHAR(20) NOT NULL,
+    PatientLastName NVARCHAR(20) NOT NULL,
+    ReleaseDate DATE
 );
 
--- Таблица: Рецепты-Медикаменты
-CREATE TABLE Рецепты_Медикаменты (
-    Recept_MedikamentId INT PRIMARY KEY,
-    MedikamentId INT NOT NULL,
-    Количество INT NOT NULL,
-    RecipeId INT NOT NULL,
-    FOREIGN KEY (MedikamentId) REFERENCES Medikament(MedikamentId),
-    FOREIGN KEY (RecipeId) REFERENCES Рецепты(RecipeId)
+CREATE TABLE Prescription_Medications (
+    PrescriptionMedicationId INT PRIMARY KEY,
+    MedicationId INT NOT NULL,
+    Quantity INT NOT NULL,
+    PrescriptionId INT NOT NULL,
+    FOREIGN KEY (MedicationId) REFERENCES Medications(MedicationId),
+    FOREIGN KEY (PrescriptionId) REFERENCES Prescriptions(PrescriptionId)
 );
 
-
-CREATE TABLE Отпуск_Медикаментов (
-    OtpuskId INT PRIMARY KEY,
-    MedikamentId INT NOT NULL,
-    Количество INT NOT NULL,
-    Дата_Отпуска DATE,
-    RecipeId INT,
-    FOREIGN KEY (MedikamentId) REFERENCES Medikament(MedikamentId),
-    FOREIGN KEY (RecipeId) REFERENCES Рецепты(RecipeId)
+CREATE TABLE Medication_Issuance (
+    IssuanceId INT PRIMARY KEY,
+    MedicationId INT NOT NULL,
+    Quantity INT NOT NULL,
+    IssuanceDate DATE,
+    PrescriptionId INT,
+    FOREIGN KEY (MedicationId) REFERENCES Medications(MedicationId),
+    FOREIGN KEY (PrescriptionId) REFERENCES Prescriptions(PrescriptionId)
 );
 
-
-CREATE TABLE Поставка_на_Склад (
-    NoteId INT PRIMARY KEY,
-    Срок_Поставки DATE NOT NULL
+CREATE TABLE Warehouse_Supply (
+    SupplyNoteId INT PRIMARY KEY,
+    SupplyDate DATE NOT NULL
 );
 
-
-CREATE TABLE Поставки_Медикамента (
-    Note_MedikamentId INT PRIMARY KEY,
-    NoteId INT NOT NULL,
-    MedikamentId INT NOT NULL,
-    Количество INT NOT NULL,
-    FOREIGN KEY (NoteId) REFERENCES Поставка_на_Склад(NoteId),
-    FOREIGN KEY (MedikamentId) REFERENCES Medikament(MedikamentId)
+CREATE TABLE Supply_Medications (
+    SupplyMedicationId INT PRIMARY KEY,
+    SupplyNoteId INT NOT NULL,
+    MedicationId INT NOT NULL,
+    Quantity INT NOT NULL,
+    FOREIGN KEY (SupplyNoteId) REFERENCES Warehouse_Supply(SupplyNoteId),
+    FOREIGN KEY (MedicationId) REFERENCES Medications(MedicationId)
 );
-
-
-
-
-
-
